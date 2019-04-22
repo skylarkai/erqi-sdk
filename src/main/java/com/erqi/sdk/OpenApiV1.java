@@ -1,13 +1,20 @@
 package com.erqi.sdk;
 
 import java.io.UnsupportedEncodingException;
+import java.net.NetworkInterface;
 import java.net.URLEncoder;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.session.mgt.SimpleSession;
+import org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * OpenApiV1
@@ -67,7 +74,7 @@ public class OpenApiV1 {
         sb.append(protocol).append("://").append(this.serverName).append("/uaa/oauth/token");
         String url = sb.toString();
         params.put( "grant_type","password" );
-        String respToken =   SnsNetwork.postRequest(url,params,null,protocol);
+        String respToken =   SnsNetwork.postRequest(url,params,null,protocol,"");
         return respToken;
     }
 
@@ -84,7 +91,7 @@ public class OpenApiV1 {
         String url = sb.toString();
         String respToken = null;
         try {
-            respToken = SnsNetwork.postRequest(url,params,null,protocol);
+            respToken = SnsNetwork.postRequest(url,params,null,protocol,"");
         } catch (OpensnsException e) {
             e.printStackTrace();
         }
@@ -107,7 +114,7 @@ public class OpenApiV1 {
         String respToken = null;
         params.put( "grant_type","refresh_token" );
         try {
-            respToken = SnsNetwork.postRequest(url,params,null,protocol);
+            respToken = SnsNetwork.postRequest(url,params,null,protocol,"");
         } catch (OpensnsException e) {
             e.printStackTrace();
         }
@@ -122,7 +129,7 @@ public class OpenApiV1 {
      * @param protocol HTTP请求协议 "http" / "https"
      * @return 返回服务器响应内容
      */
-    public String api(String method,String scriptName, HashMap<String, Object> params, String protocol) throws OpensnsException
+    public String api(String method,String scriptName, HashMap<String, Object> params, String protocol,String medaitype) throws OpensnsException
     {
         ReturnMap ret = new ReturnMap();
         if("".equals(accessToken ) || accessToken.isEmpty() ){
@@ -155,12 +162,12 @@ public class OpenApiV1 {
             if ("get".equals( method )) {
                 resp = SnsNetwork.getRequest( url, params, cookies, protocol );
             } else {
-                resp = SnsNetwork.postRequest( url, params, cookies, protocol );
+                resp = SnsNetwork.postRequest( url, params, cookies, protocol,medaitype);
             }
             long startTime = System.currentTimeMillis();
             int rc = 0;
             if(!"".equals( resp ) ){
-                JSONObject jsonObject = JSONObject.fromObject( resp );
+                JSONObject jsonObject = JSON.parseObject( resp );
                 rc= Integer.valueOf( jsonObject.get( "code" ).toString() ) ;
             }
             // 统计上报
@@ -218,7 +225,7 @@ public class OpenApiV1 {
 
             int rc = 0;
             if(!"".equals( resp ) ){
-                JSONObject jsonObject = JSONObject.fromObject( resp );
+                JSONObject jsonObject = JSON.parseObject( resp );
                 rc= Integer.valueOf( jsonObject.get( "code" ).toString() ) ;
             }
 
@@ -281,4 +288,24 @@ public class OpenApiV1 {
         System.out.println(resp);
     }
 
+    /**
+     * 获取SessonID
+     *
+     * @return
+     */
+    public String getCsid(){
+        Session session = new SimpleSession( getServiceIp() );
+        JavaUuidSessionIdGenerator javaUuidSessionIdGenerator = new JavaUuidSessionIdGenerator();
+        return   javaUuidSessionIdGenerator.generateId( session ).toString();
+    }
+
+    private String getServiceIp() {
+        String ip = "";
+        try {
+            Enumeration<NetworkInterface> netInterfaces =  NetworkInterface.getNetworkInterfaces();
+            ip = netInterfaces.nextElement().getInetAddresses().nextElement().getHostAddress();
+        } catch (Exception e) {
+        }
+        return ip;
+    }
 }

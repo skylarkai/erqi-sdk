@@ -1,5 +1,7 @@
 package com.erqi.sdk;
 
+import com.alibaba.fastjson.JSON;
+
 import java.net.*;
 import java.util.*;
 
@@ -19,7 +21,7 @@ public class SnsStat
     // 上报服务器的Name
     private static final String STAT_SVR_NAME = "10.10.12.149";
     // 上报服务器的端口
-    private static final int STAT_SVR_PORT = 1000;
+    private static final int STAT_SVR_PORT = 9999;
 
     /** 
      * 统计上报
