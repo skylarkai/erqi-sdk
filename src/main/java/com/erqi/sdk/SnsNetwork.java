@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSON;
 import com.erqi.sdk.https.MySecureProtocolSocketFactory;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
@@ -18,6 +20,8 @@ import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.MultipartPostMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.RequestEntity;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpMethodParams;
@@ -51,8 +55,7 @@ public class SnsNetwork
             String url, 
             HashMap<String, Object> params,
             HashMap<String, String> cookies,
-            String protocol) throws OpensnsException
-    {
+            String protocol,String mediatype) throws OpensnsException {
         if (protocol.equalsIgnoreCase("https"))
         {
             Protocol httpsProtocol = new Protocol("https",
@@ -70,18 +73,23 @@ public class SnsNetwork
         // 设置请求参数
         if (params != null && !params.isEmpty())
         {
-        NameValuePair[] data = new NameValuePair[params.size()];
+            if(mediatype.equals( "JSON" )){
+                RequestEntity re = new StringRequestEntity( JSON.toJSONString( params ));
+                postMethod.setRequestEntity( re );
+            }else{
+                NameValuePair[] data = new NameValuePair[params.size()];
 
-        Iterator iter = params.entrySet().iterator();
-        int i=0;
-        while (iter.hasNext())
-        {
-            Map.Entry entry = (Map.Entry) iter.next();
-            data[i] = new NameValuePair((String)entry.getKey(), String.valueOf(entry.getValue()));
-            ++i;
+                Iterator iter = params.entrySet().iterator();
+                int i = 0;
+                while (iter.hasNext()) {
+                    Map.Entry entry = (Map.Entry) iter.next();
+                    data[i] = new NameValuePair( (String) entry.getKey(), String.valueOf( entry.getValue() ) );
+                    ++i;
+                }
+
+                postMethod.setRequestBody( data );
         }
 
-        postMethod.setRequestBody(data);
     }
 
         // 设置cookie
@@ -103,6 +111,7 @@ public class SnsNetwork
 
         if(accessToken != null) {
             postMethod.setRequestHeader( "Authorization", accessToken );
+            postMethod.setRequestHeader("Content-Type","application/json");
         }
         // 设置建立连接超时时间
         httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(CONNECTION_TIMEOUT);
