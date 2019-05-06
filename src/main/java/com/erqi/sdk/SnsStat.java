@@ -19,9 +19,9 @@ import java.util.*;
 public class SnsStat
 {
     // 上报服务器的Name
-    private static final String STAT_SVR_NAME = "10.10.12.149";
+    private static final String STAT_SVR_NAME = "dev.skylarkai.cn";
     // 上报服务器的端口
-    private static final int STAT_SVR_PORT = 9999;
+    private static final int STAT_SVR_PORT = 9998;
 
     /** 
      * 统计上报

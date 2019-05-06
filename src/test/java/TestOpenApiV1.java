@@ -18,13 +18,13 @@ public class TestOpenApiV1 {
         String appid= "1";
         String appkey="421621764201";
         String appSecret="047917712880364406";
-        String servername="localhost:9001";
+        String servername="dev.skylarkai.cn";
 
-        String username="yqzx";
-        String password="yqzx";
+        String username="chuhl";
+        String password="chuhl";
 
         // 指定HTTP请求协议类型
-        String protocol = "http";
+        String protocol = "https";
         OpenApiV1 sdk = new OpenApiV1( appid,appkey,appSecret );
         sdk.setServerName( servername );
         HashMap<String,Object> params = new HashMap<String, Object>(  );
@@ -58,7 +58,7 @@ public class TestOpenApiV1 {
         // 指定OpenApi Cgi名字
         String scriptName = "/usertenant/user/selectByUsername";
         String method="post";
-        String protocol="http";
+        String protocol="https";
         HashMap<String,Object> params = new HashMap<String, Object>(  );
         params.put( "name","yqzx" );
         String ret=null;
@@ -99,10 +99,10 @@ public class TestOpenApiV1 {
         //调用异步api
         String scriptName = "/openapi/v1/WebApiSendMsgToKf";
         String method="post";
-        String protocol="http";
+        String protocol="https";
         //设置api参数
         HashMap<String,Object> values = new HashMap<String, Object>(  );
-        values.put( "msg","engineer" );
+        values.put( "msg","您好！" );
         values.put( "tenanid","1" );
         values.put( "webapiid","zcojpxZV" );
         values.put( "fromUsername","游客3399" );
@@ -111,7 +111,7 @@ public class TestOpenApiV1 {
         params.put( "csid",sdk.getCsid() );
 
         //设置回调api
-        params.put( "callbackUrl","http://localhost:9990/openapi/getCallbackResult" );
+        params.put( "callbackUrl","https://dev.skylarkai.cn/openapi/getCallbackResult" );
         params.put( "callbackMethod","POST");
         try {
             sdk.api(method,scriptName,params,protocol,"JSON" );
