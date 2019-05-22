@@ -1,4 +1,4 @@
-package com.erqi.sdk;
+package cn.skylarkai.sdk;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -15,7 +15,6 @@ import java.util.regex.Pattern;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-// hmacsha1
 
  
 /**
@@ -24,7 +23,6 @@ import javax.crypto.spec.SecretKeySpec;
 * @version 1.0.0
 * @since jdk1.8
 * @author open.erqikefu.com
-* @copyright © 2018, Skylarkai Corporation. All rights reserved.
 *
 */
  
@@ -98,6 +96,7 @@ public class SnsSigCheck
      * @param url_path CGI名字, eg: /v3/user/get_info
      * @param params URL请求参数
      * @return 签名所需源串
+     * @exception OpensnsException 网路异常
      */
     public static String makeSource(String method, String url_path, HashMap<String, Object> params) throws OpensnsException
     {
@@ -126,6 +125,17 @@ public class SnsSigCheck
         return buffer.toString();
     }
 
+    /**
+     * 验证凭证
+     *
+     * @param method POST/GET
+     * @param url_path url地址
+     * @param params 参数
+     * @param secret 密码
+     * @param sig 凭证
+     * @return 验证结果
+     * @throws OpensnsException 网路异常
+     */
     public static boolean verifySig(String method, String url_path, HashMap<String, Object> params, String secret, String sig) throws OpensnsException
     {
         // 确保不含sig
@@ -142,19 +152,16 @@ public class SnsSigCheck
     }
 
     /**
-     * 应用发货URL接口对腾讯回调传来的参数value值先进行一次编码方法，用于验签 
-     * (编码规则为：除了 0~9 a~z A~Z !*() 之外其他字符按其ASCII码的十六进制加%进行表示，例如“-”编码为“%2D”)
-     * 参考 <回调发货URL的协议说明_V3>
-     * 
-     * @param params
-     *            腾讯回调传参Map (key,value);
+     * URL接口对回调传来的参数value值先进行一次编码方法，用于验签
+     *
+     * @param params 回调传参Map (key,value);
      */
     public static void codePayValue(Map<String, Object> params)
     {
         Set<String> keySet = params.keySet();
         Iterator<String> itr = keySet.iterator();
 
-        while (itr.hasNext()) 
+        while (itr.hasNext())
         {
             String key = (String) itr.next();
             String value = (String) params.get(key);
@@ -164,9 +171,9 @@ public class SnsSigCheck
     }
 
     /**
-     * 应用发货URL接口的编码规则
-     * @param s
-     * @return
+     * URL接口的编码规则
+     * @param s encode
+     * @return 返回结果
      */
     public static String encodeValue(String s) 
     {
@@ -194,9 +201,9 @@ public class SnsSigCheck
     }
 
     /**
-     * 应用发货URL　十六进制编码　
-     * @param s
-     * @return
+     * URL　十六进制编码　
+     * @param s 字符串
+     * @return 返回结果
      */
     private static String hexString(String s) 
     {

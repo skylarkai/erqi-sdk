@@ -1,9 +1,9 @@
-package com.erqi.sdk;
+package cn.skylarkai.sdk;
 
-import com.alibaba.fastjson.JSON;
-
-import java.net.*;
-import java.util.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.util.HashMap;
 
 
  
@@ -13,7 +13,6 @@ import java.util.*;
 * @version 1.0.0
 * @since jdk1.8
 * @author open.erqikefu.com
-* @copyright © 2018, Skylarkai Corporation. All rights reserved.
 *
 */
 public class SnsStat
@@ -27,6 +26,11 @@ public class SnsStat
      * 统计上报
      *
      * @param startTime 请求开始时间(毫秒单位)
+     * @param serverName 服务器名称
+     * @param method POST/GET
+     * @param protocol 协议
+     * @param scriptName scriptname
+     * @param rc 次数
      * @param params 上报参数
      */
     public static void statReport(

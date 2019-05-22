@@ -1,4 +1,10 @@
-package com.erqi.sdk;
+package cn.skylarkai.sdk;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.session.mgt.SimpleSession;
+import org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator;
 
 import java.io.UnsupportedEncodingException;
 import java.net.NetworkInterface;
@@ -8,19 +14,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.shiro.session.Session;
-import org.apache.shiro.session.mgt.SimpleSession;
-import org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-
 /**
  * OpenApiV1
  *
  * @author chuhl
- * @date 2018/12/28
  */
 public class OpenApiV1 {
     private String appid;
@@ -35,6 +32,7 @@ public class OpenApiV1 {
      *
      * @param appid 应用的ID
      * @param appkey 应用的密钥
+     * @param appsecret 应用密码
      */
     public OpenApiV1(String appid, String appkey, String appsecret)
     {
@@ -65,16 +63,24 @@ public class OpenApiV1 {
      * 获取access_token
      *
      * @param params (client_id、client_secret、grant_type、username、password)
-     * @param protocol
-     * @return
-     * @throws OpensnsException
+     * @param protocol 协议
+     * @return accessToken
+     * @throws OpensnsException 异常
+     * @throws UnsupportedEncodingException 异常
      */
-    public String getToken(HashMap<String, Object> params,String protocol) throws OpensnsException {
+    public String getToken(HashMap<String, Object> params,String protocol) throws OpensnsException, UnsupportedEncodingException {
         StringBuilder sb = new StringBuilder(64);
         sb.append(protocol).append("://").append(this.serverName).append("/uaa/oauth/token");
         String url = sb.toString();
         params.put( "grant_type","password" );
-        String respToken =   SnsNetwork.postRequest(url,params,null,protocol,"");
+        String respToken="";
+        try{
+            respToken =   SnsNetwork.postRequest(url,params,null,"");
+        } catch (OpensnsException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         return respToken;
     }
 
@@ -82,8 +88,8 @@ public class OpenApiV1 {
      * checkToken
      *
      * @param params (token)
-     * @param protocol
-     * @return
+     * @param protocol 协议
+     * @return accessToken
      */
     public String checkToken(HashMap<String, Object> params,String protocol){
         StringBuilder sb = new StringBuilder(64);
@@ -91,9 +97,11 @@ public class OpenApiV1 {
         String url = sb.toString();
         String respToken = null;
         try {
-            respToken = SnsNetwork.postRequest(url,params,null,protocol,"");
+                respToken = SnsNetwork.postRequest(url,params,null,"");
         } catch (OpensnsException e) {
             e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
         }
         return respToken;
     }
@@ -104,8 +112,8 @@ public class OpenApiV1 {
      * 请求所需参数：grant_type、refresh_token、client_id、client_secret 其中grant_type为固定值：grant_type=refresh_token
      *
      * @param params (refresh_token,client_id,client_secret)
-     * @param protocol
-     * @return
+     * @param protocol 协议
+     * @return accessToken
      */
     public String refreshToken(HashMap<String, Object> params,String protocol){
         StringBuilder sb = new StringBuilder(64);
@@ -114,8 +122,10 @@ public class OpenApiV1 {
         String respToken = null;
         params.put( "grant_type","refresh_token" );
         try {
-            respToken = SnsNetwork.postRequest(url,params,null,protocol,"");
+            respToken = SnsNetwork.postRequest(url,params,null,"");
         } catch (OpensnsException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return respToken;
@@ -124,13 +134,16 @@ public class OpenApiV1 {
     /**
      * 执行API调用
      *
+     * @param method 调用api接口
      * @param scriptName OpenApi CGI名字 ,如/usertenant/user/getUser
      * @param params OpenApi的参数列表
      * @param protocol HTTP请求协议 "http" / "https"
+     * @param medaitype JSON/TEXT
      * @return 返回服务器响应内容
+     * @throws OpensnsException 异常
+     * @throws UnsupportedEncodingException 异常
      */
-    public String api(String method,String scriptName, HashMap<String, Object> params, String protocol,String medaitype) throws OpensnsException
-    {
+    public String api(String method,String scriptName, HashMap<String, Object> params, String protocol,String medaitype) throws OpensnsException, UnsupportedEncodingException {
         ReturnMap ret = new ReturnMap();
         if("".equals(accessToken ) || accessToken.isEmpty() ){
             ret.setFlg( 1 );
@@ -159,10 +172,10 @@ public class OpenApiV1 {
             // 发送请求
             String resp = "";
             printRequest(url,method,params);
-            if ("get".equals( method )) {
-                resp = SnsNetwork.getRequest( url, params, cookies, protocol );
+            if ("get".equalsIgnoreCase( method )) {
+                resp = SnsNetwork.getRequest( url, params, cookies );
             } else {
-                resp = SnsNetwork.postRequest( url, params, cookies, protocol,medaitype);
+                resp = SnsNetwork.postRequest( url, params, cookies,medaitype);
             }
             long startTime = System.currentTimeMillis();
             int rc = 0;
@@ -178,69 +191,6 @@ public class OpenApiV1 {
             return resp;
         }
     }
-
-
-    /**
-     * 执行API调用
-     *
-     * @param scriptName OpenApi CGI名字 ,如/usertenant/user/getUser
-     * @param params OpenApi的参数列表
-     * @param fp 上传的文件
-     * @param protocol HTTP请求协议 "http" / "https"
-     * @return 返回服务器响应内容
-     */
-    public String apiUploadFile(String method,String scriptName, HashMap<String, Object> params, FilePart fp, String protocol) throws OpensnsException
-    {
-
-        ReturnMap ret = new ReturnMap();
-        if("".equals(accessToken ) || accessToken.isEmpty() ){
-            ret.setFlg( 1 );
-            ret.setMessage( "ACCESS_TOKEN 不能为空！" );
-            return ret.ReturnMap();
-        }else {
-            // 无需传sig,会自动生成
-            params.remove("sig");
-
-            // 添加固定参数
-            params.put( "appid", this.appid );
-            // 签名密钥
-            String secret = this.appkey + "&";
-
-            // 计算签名
-            String sig = SnsSigCheck.makeSig( method, scriptName, params, secret );
-
-            params.put( "sig", sig );
-
-            StringBuilder sb = new StringBuilder( 64 );
-            sb.append( protocol ).append( "://" ).append( this.serverName ).append( scriptName );
-            String url = sb.toString();
-
-            // cookie
-            HashMap<String, String> cookies = null;
-            //通过调用以下方法，可以打印出最终发送到openapi服务器的请求参数以及url，默认注释
-            printRequest(url,method,params);
-            params.put( "access_token", accessToken );
-            // 发送请求
-            String resp = SnsNetwork.postRequestWithFile( url, params, cookies, fp, protocol );
-
-            int rc = 0;
-            if(!"".equals( resp ) ){
-                JSONObject jsonObject = JSON.parseObject( resp );
-                rc= Integer.valueOf( jsonObject.get( "code" ).toString() ) ;
-            }
-
-            long startTime = System.currentTimeMillis();
-                // 统计上报
-            SnsStat.statReport(startTime, serverName, params, method, protocol, rc,scriptName);
-
-
-            //通过调用以下方法，可以打印出调用openapi请求的返回码以及错误信息，默认注释
-            printRespond(resp);
-
-            return resp;
-        }
-    }
-
 
     /**
      * 辅助函数，打印出完整的请求串内容
@@ -279,7 +229,7 @@ public class OpenApiV1 {
 
     /**
      * 辅助函数，打印出完整的执行的返回信息
-     *
+     * @param resp 输出内容
      * @return 返回服务器响应内容
      */
     private void printRespond(String resp)
@@ -291,7 +241,7 @@ public class OpenApiV1 {
     /**
      * 获取SessonID
      *
-     * @return
+     * @return sessionID
      */
     public String getCsid(){
         Session session = new SimpleSession( getServiceIp() );
@@ -299,6 +249,11 @@ public class OpenApiV1 {
         return   javaUuidSessionIdGenerator.generateId( session ).toString();
     }
 
+    /**
+     * 获取本机IP地址
+     *
+     * @return
+     */
     private String getServiceIp() {
         String ip = "";
         try {
