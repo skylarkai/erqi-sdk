@@ -4,19 +4,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.erqi</groupId>
+    <groupId>cn.skylarkai</groupId>
     <artifactId>erqi-sdk-java</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-RELEASE</version>
     <packaging>jar</packaging>
-
+    <url>www.skylarkai.cn</url>
+    <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
     <name>二旗客服sdk</name>
     <description>二旗智能客服sdk开发包</description>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/commons-httpclient/commons-httpclient -->
         <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-            <version>3.1</version>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.2</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>

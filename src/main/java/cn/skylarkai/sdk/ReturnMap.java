@@ -1,11 +1,10 @@
-package com.erqi.sdk;
+package cn.skylarkai.sdk;
 
 
 /**
  * ReturnMap
  *
  * @author chuhl
- * @date 2017/12/20
  */
 public class ReturnMap {
     /**
