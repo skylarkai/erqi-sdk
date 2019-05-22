@@ -1,4 +1,4 @@
-package com.erqi.sdk;
+package cn.skylarkai.sdk;
 
 
 /**
@@ -7,7 +7,6 @@ package com.erqi.sdk;
 * @version 1.0.0
 * @since jdk1.8
 * @author open.erqikefu.com
-* @copyright © 2018, Skylarkai Corporation. All rights reserved.
 *
 */
  
