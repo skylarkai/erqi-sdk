@@ -6,7 +6,7 @@
 
     <groupId>cn.skylarkai</groupId>
     <artifactId>erqi-sdk-java</artifactId>
-    <version>1.0.0-RELEASE</version>
+    <version>1.0.1-RELEASE</version>
     <packaging>jar</packaging>
     <url>www.skylarkai.cn</url>
     <properties>

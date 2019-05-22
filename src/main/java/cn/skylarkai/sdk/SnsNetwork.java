@@ -67,7 +67,8 @@ public class SnsNetwork
      * @param cookies cookie
      * @param mediatype JSON/TEXT
      * @return 服务器响应的请求结果
-     * @throws OpensnsException 网络故障时抛出异常。
+     * @throws OpensnsException 网络故障时抛出异常
+     * @throws UnsupportedEncodingException 异常
      */
     public static String postRequest(
             String url, 

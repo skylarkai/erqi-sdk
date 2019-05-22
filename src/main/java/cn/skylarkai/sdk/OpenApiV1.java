@@ -66,6 +66,7 @@ public class OpenApiV1 {
      * @param protocol 协议
      * @return accessToken
      * @throws OpensnsException 异常
+     * @throws UnsupportedEncodingException 异常
      */
     public String getToken(HashMap<String, Object> params,String protocol) throws OpensnsException, UnsupportedEncodingException {
         StringBuilder sb = new StringBuilder(64);
@@ -139,6 +140,8 @@ public class OpenApiV1 {
      * @param protocol HTTP请求协议 "http" / "https"
      * @param medaitype JSON/TEXT
      * @return 返回服务器响应内容
+     * @throws OpensnsException 异常
+     * @throws UnsupportedEncodingException 异常
      */
     public String api(String method,String scriptName, HashMap<String, Object> params, String protocol,String medaitype) throws OpensnsException, UnsupportedEncodingException {
         ReturnMap ret = new ReturnMap();

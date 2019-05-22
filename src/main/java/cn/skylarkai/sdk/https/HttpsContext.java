@@ -9,7 +9,6 @@ import java.security.cert.CertificateException;
  * httpsContext
  *
  * @author chuhl
- * @date 2019/5/22
  */
 public class HttpsContext {
 
