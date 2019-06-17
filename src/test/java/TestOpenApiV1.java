@@ -19,7 +19,7 @@ public class TestOpenApiV1 {
         String appid= "1";
         String appkey="XXXXXX";
         String appSecret="XXXXXXXX";
-        String servername="dev.skylarkai.cn";
+        String servername="skylarkai.cn";
 
         String username="XXXX";
         String password="XXXX";
