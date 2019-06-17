@@ -18,7 +18,7 @@ import java.util.HashMap;
 public class SnsStat
 {
     // 上报服务器的Name
-    private static final String STAT_SVR_NAME = "dev.skylarkai.cn";
+    private static final String STAT_SVR_NAME = "skylarkai.cn";
     // 上报服务器的端口
     private static final int STAT_SVR_PORT = 9998;
 
